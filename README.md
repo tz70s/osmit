@@ -1,2 +1,6 @@
-# osmit
-mit 6.828 course practices
+OSmit
+
+Implement a simple operating system.
+
+
+
