@@ -1,3 +1,5 @@
+/* A multiboot entry point, modified from osdev bare bones tutorial. */
+
 /* Declare constants for the multiboot header. */
 .set ALIGN,    1<<0             /* align loaded modules on page boundaries */
 .set MEMINFO,  1<<1             /* provide memory map */
@@ -33,7 +35,7 @@ undefined behavior.
 .section .bss
 .align 16
 stack_bottom:
-.skip 16384 # 16 KiB
+.space 16384 # Initialized memory of 16 KiB
 stack_top:
 
 /*
@@ -43,19 +45,13 @@ doesn't make sense to return from this function as the bootloader is gone.
 */
 .section .text
 .global _start
-.type _start, @function
 _start:
 	/*
 	The bootloader has loaded us into 32-bit protected mode on a x86
-	machine. Interrupts are disabled. Paging is disabled. The processor
-	state is as defined in the multiboot standard. The kernel has full
-	control of the CPU. The kernel can only make use of hardware features
-	and any code it provides as part of itself. There's no printf
-	function, unless the kernel provides its own <stdio.h> header and a
-	printf implementation. There are no security restrictions, no
-	safeguards, no debugging mechanisms, only what the kernel provides
-	itself. It has absolute and complete power over the
-	machine.
+	machine. 
+	1. Interrupts are disabled.
+	2. Paging is disabled. 
+	3. The processor state is as defined in the multiboot standard.
 	*/
 
 	/*
@@ -65,16 +61,7 @@ _start:
 	*/
 	mov $stack_top, %esp
 
-	/*
-	This is a good place to initialize crucial processor state before the
-	high-level kernel is entered. It's best to minimize the early
-	environment where crucial features are offline. Note that the
-	processor is not fully initialized yet: Features such as floating
-	point instructions and instruction set extensions are not initialized
-	yet. The GDT should be loaded here. Paging should be enabled here.
-	C++ features such as global constructors and exceptions will require
-	runtime support to work as well.
-	*/
+	/* TODO: set GDT and page here */
 
 	/*
 	Enter the high-level kernel. The ABI requires the stack is 16-byte
@@ -99,8 +86,9 @@ _start:
 	   non-maskable interrupt occurring or due to system management mode.
 	*/
 	cli
-1:	hlt
-	jmp 1b
+haltme:
+	hlt
+	jmp haltme
 
 /*
 Set the size of the _start symbol to the current location '.' minus its start.
