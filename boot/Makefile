@@ -2,15 +2,15 @@ ARCH=i386
 CC=gcc
 CFLAGS= -g -Os -march=$(ARCH) -m32 -ffreestanding -Wall -Werror
 
-boot.o: boot.S
+boot.bin: boot.o kernel.o
+	ld -melf_i386 -Tkernel.ld -nostdlib --nmagic -o $@ $^
+boot.o: boot.s
 	$(CC) -c $(CFLAGS) $< -o $@
-
-.PHONY: as
-as:
-	ld -Ttext 0x7c00 -melf_i386 -Tsetup.ld --oformat=binary boot.o -o boot.bin
-target:
-	ld -static -melf_i386 -Tsetup.ld -nostdlib --nmagic -o boot.elf boot.o
-	objcopy -O binary boot.elf boot.bin
+kernel.o: kernel.c
+	$(CC) -c $(CFLAGS) $< -o $@
+qemu:
+	@echo "start booting kernel from qemu..."
+	@qemu-system-i386 -kernel boot.bin
 
 clean:
-	rm *.o *.elf *.bin
+	rm *.o *.bin
