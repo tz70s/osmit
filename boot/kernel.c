@@ -106,5 +106,9 @@ void kernel_main(void) {
 	terminal_initialize();
  
 	/* Newline support is left as an exercise. */
-	terminal_writestring("Starting kernel...\n");
+	terminal_writestring( \
+	"Baby i386 kernel implementation.\n" \
+	"Author @tz70s in 2017. Contact: su3g4284zo6y7@gmail.com\n" \
+	"Mostly reference to MIT xv6 and OSdev forum\n" \
+	"Start kernel...\n");
 }
