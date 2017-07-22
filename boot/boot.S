@@ -97,13 +97,10 @@ haltme:
 	hlt
 	jmp haltme
 
-/*
-Set the size of the _start symbol to the current location '.' minus its start.
-This is useful when debugging or when you implement call tracing.
-*/
 .size _start, . - _start
 
 # Bootstrap GDT
+.data
 .p2align 2                                # force 4 byte alignment
 gdt:
   SEG_NULLASM                             # null seg
