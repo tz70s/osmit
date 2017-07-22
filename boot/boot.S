@@ -1,4 +1,5 @@
 /* A multiboot entry point, modified from osdev bare bones tutorial. */
+#include <asm.h>
 
 /* Declare constants for the multiboot header. */
 .set ALIGN,    1<<0             /* align loaded modules on page boundaries */
@@ -63,6 +64,10 @@ _start:
 
 	/* TODO: set GDT and page here */
 
+	/* Set up GDT, reference to xv6 MIT
+	   The not really useful segment, directly transfer from logical address to linear address
+	*/
+	lgdt gdtdesc
 	/*
 	Enter the high-level kernel. The ABI requires the stack is 16-byte
 	aligned at the time of the call instruction (which afterwards pushes
@@ -95,3 +100,14 @@ Set the size of the _start symbol to the current location '.' minus its start.
 This is useful when debugging or when you implement call tracing.
 */
 .size _start, . - _start
+
+# Bootstrap GDT
+.p2align 2                                # force 4 byte alignment
+gdt:
+  SEG_NULLASM                             # null seg
+  SEG_ASM(STA_X|STA_R, 0x0, 0xffffffff)   # code seg
+  SEG_ASM(STA_W, 0x0, 0xffffffff)         # data seg
+
+gdtdesc:
+  .word   (gdtdesc - gdt - 1)             # sizeof(gdt) - 1
+  .long   gdt                             # address gdt

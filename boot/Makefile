@@ -1,12 +1,12 @@
 # current using architecture i386
 ARCH=i386
 CC=gcc
-CFLAGS= -g -Os -march=$(ARCH) -m32 -ffreestanding -Wall -Werror
+CFLAGS= -g -static -fno-builtin -fno-strict-aliasing -O2 -march=$(ARCH) -m32 -ffreestanding -Wall -Werror
 
 boot.bin: boot.o kernel.o
 	ld -melf_i386 -Tkernel.ld -nostdlib --nmagic -o $@ $^
-boot.o: boot.s
-	$(CC) -c $(CFLAGS) $< -o $@
+boot.o: boot.S
+	$(CC) $(CFLAGS) -nostdinc -I. -c $< -o $@
 kernel.o: kernel.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
