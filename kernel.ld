@@ -1,4 +1,9 @@
-/* linker script, modified from osdev bare bones tutorial. */ 
+/* 
+ * Linker script, modified from osdev bare bones tutorial.
+ * The memory placement for the kernel, start from 1MB = 0x100000 byte address.
+ * At the starting point, the stack is placed with bss section.
+ */ 
+
 
 ENTRY(_start)
 
