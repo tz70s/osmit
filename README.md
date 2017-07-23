@@ -3,13 +3,13 @@
 Implement a simple operating system.
 
 ### TODO
-- [  ] Initialized Kernel
-	- [  ] Set up GDT
-	- [  ] Set up IDT
-- [  ] Memory Management
-	- [  ] Paging
-- [  ] Process Management
-- [  ] Interrupt, I/O Management 
+- [ ] Initialized Kernel
+	- [ ] Set up GDT
+	- [ ] Set up IDT
+- [ ] Memory Management
+	- [ ] Paging
+- [ ] Process Management
+- [ ] Interrupt, I/O Management 
 
 ### Execution
 ```bash
