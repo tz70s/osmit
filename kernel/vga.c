@@ -1,5 +1,4 @@
-#include "vga.h"
-#include "type.h"
+#include "kernel.h"
 
 #define WIDTH 80
 #define HEIGHT 25
@@ -51,9 +50,9 @@ void screen_putc(char c, vga_color_t back, vga_color_t front) {
 }
 
 // put a string
-void screen_puts(char *s) {
+void screen_puts(char *s, vga_color_t back, vga_color_t front) {
     while(*s) {
-        screen_putc(*s, VGA_COLOR_BLACK, VGA_COLOR_LIGHT_BLUE);
+        screen_putc(*s, back, front);
         s++;
     }
 }
