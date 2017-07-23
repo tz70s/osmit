@@ -22,13 +22,7 @@ forced to be within the first 8 KiB of the kernel file.
 .long CHECKSUM
 
 /*
-The multiboot standard does not define the value of the stack pointer register
-(esp) and it is up to the kernel to provide a stack. This allocates room for a
-small stack by creating a symbol at the bottom of it, then allocating 16384
-bytes for it, and finally creating a symbol at the top. The stack grows
-downwards on x86. The stack is in its own section so it can be marked nobits,
-which means the kernel file is smaller because it does not contain an
-uninitialized stack. The stack on x86 must be 16-byte aligned according to the
+The stack on x86 must be 16-byte aligned according to the
 System V ABI standard and de-facto extensions. The compiler will assume the
 stack is properly aligned and failure to align the stack will result in
 undefined behavior.
@@ -41,8 +35,7 @@ stack_top:
 
 /*
 The linker script specifies _start as the entry point to the kernel and the
-bootloader will jump to this position once the kernel has been loaded. It
-doesn't make sense to return from this function as the bootloader is gone.
+bootloader will jump to this position once the kernel has been loaded.
 */
 .section .text
 .global _start
@@ -62,21 +55,16 @@ _start:
 	*/
 	mov $stack_top, %esp
 
-	/* TODO: set GDT and page here */
-
-	/* Set up GDT, reference to xv6 MIT
-	   The not really useful segment, directly transfer from logical address to linear address
+	/* 
+	Set up GDT, reference to xv6 MIT.
+	The not really useful segment, directly transfer from logical address to linear address.
+	TODO: Remove this, initialize GDT in pure C code after high level kernel start.
 	*/
 	
 	lgdt gdtdesc
 	
 	/*
-	Enter the high-level kernel. The ABI requires the stack is 16-byte
-	aligned at the time of the call instruction (which afterwards pushes
-	the return pointer of size 4 bytes). The stack was originally 16-byte
-	aligned above and we've since pushed a multiple of 16 bytes to the
-	stack since (pushed 0 bytes so far) and the alignment is thus
-	preserved and the call is well defined.
+	Early Jump to the high level C kernel.
 	*/
 	call kernel_main
 
@@ -100,8 +88,8 @@ haltme:
 .size _start, . - _start
 
 # Bootstrap GDT
-.data
-.p2align 2                                # force 4 byte alignment
+.section .data
+.align 4                                  # 4 byte alignment
 gdt:
   SEG_NULLASM                             # null seg
   SEG_ASM(STA_X|STA_R, 0x0, 0xffffffff)   # code seg
