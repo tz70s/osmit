@@ -9,6 +9,7 @@ static uint16_t *vga_memory = (uint16_t*)0xB8000;
 // Cursor position
 static uint8_t cursor_x = 0;
 static uint8_t cursor_y = 0;
+static void cursor();
 
 void screen_init() {
     uint8_t color_byte = (VGA_COLOR_BLACK << 4) | (VGA_COLOR_BLACK & 0x0f);
@@ -19,6 +20,32 @@ void screen_init() {
     }
     cursor_x = 0;
     cursor_y = 0;
+
+    /* Initialized Cursor */
+    //outb(0x3D4, 0x0A);
+    //uint8_t curstart = inb(0x3D5) & 0x1F; // get cursor scanline start
+    //outb(0x3D4, 0x0A);
+    //outb(0x3D5, curstart & ~0x20);
+
+    cursor();
+}
+
+/* Cursor */
+static void cursor() {
+    uint16_t cursorLocation = cursor_y*80 + cursor_x;
+
+    /*
+    Two I/O register involved,
+    $14 -> the higher 8bits of cursor location
+    $15 -> the lower 8bits of cursor location
+    0x3D4 represented as telling I/O we want to set cursor
+    0x3D5 represented as setting cursor location
+    */
+
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, cursorLocation >> 8);
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, cursorLocation);
 }
 
 // put a character on the screen
@@ -34,6 +61,7 @@ void screen_putc(char c, vga_color_t back, vga_color_t front) {
         case '\n':
             cursor_x = 0;
             cursor_y++;
+            cursor();
             return;
         default:
             if (c >= ' ') {
@@ -47,6 +75,8 @@ void screen_putc(char c, vga_color_t back, vga_color_t front) {
         cursor_x = 0;
         cursor_y++;
     }
+
+    cursor();
 }
 
 // put a string
