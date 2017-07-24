@@ -21,13 +21,9 @@ void screen_init() {
     cursor_x = 0;
     cursor_y = 0;
 
-    /* Initialized Cursor */
-    //outb(0x3D4, 0x0A);
-    //uint8_t curstart = inb(0x3D5) & 0x1F; // get cursor scanline start
-    //outb(0x3D4, 0x0A);
-    //outb(0x3D5, curstart & ~0x20);
-
-    cursor();
+    /* TODO : Initialized Cursor */
+    
+	cursor();
 }
 
 /* Cursor */
