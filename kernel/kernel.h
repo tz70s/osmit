@@ -80,13 +80,13 @@ typedef struct gdt_entry_t {
 	uint8_t access;
 	uint8_t granularity;
 	uint8_t base_high;
-} __attirbute__((packed)) gdt_entry_t;
+} __attribute__((packed, aligned(1))) gdt_entry_t;
 
 /* GDTR 48 bits - higher 32 bits for base address and lower 16 bits for limit */
 typedef struct gdt_ptr_t {
 	uint16_t limit;
 	uint32_t base;
-} __attirbute__((packed)) gdt_ptr_t;
+} __attribute__((packed, aligned(1))) gdt_ptr_t;
 
 void init_gdt();
 
