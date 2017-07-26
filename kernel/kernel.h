@@ -71,7 +71,6 @@ D/B (Default operation size, 0=16bit segment, 1=32bit segment) - 22
 G (Granularity) - 23 
 Base Address - 24 ~ 31 (Totally 32 bits)
 
-
 */
 typedef struct gdt_entry_t {
 	uint16_t limit; 

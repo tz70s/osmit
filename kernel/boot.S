@@ -40,6 +40,8 @@ bootloader will jump to this position once the kernel has been loaded.
 .section .text
 .global _start
 _start:
+	
+	cli
 	/*
 	The bootloader has loaded us into 32-bit protected mode on a x86
 	machine. 
@@ -55,14 +57,6 @@ _start:
 	*/
 	mov $stack_top, %esp
 
-	/* 
-	Set up GDT, reference to xv6 MIT.
-	The not really useful segment, directly transfer from logical address to linear address.
-	TODO: Remove this, initialize GDT in pure C code after high level kernel start.
-	*/
-	
-	lgdt gdtdesc
-	
 	/*
 	Early Jump to the high level C kernel.
 	*/
@@ -87,14 +81,17 @@ haltme:
 
 .size _start, . - _start
 
-# Bootstrap GDT
-.section .data
-.align 4                                  # 4 byte alignment
-gdt:
-  SEG_NULLASM                             # null seg
-  SEG_ASM(STA_X|STA_R, 0x0, 0xffffffff)   # code seg
-  SEG_ASM(STA_W, 0x0, 0xffffffff)         # data seg
+.global gdt_update
+gdt_update:
+	movl 4(%esp), %eax
+	lgdt (%eax)
+	movw $0x10, %ax
+	movw %ax, %ds 
+	movw %ax, %es
+	movw %ax, %fs 
+	movw %ax, %gs 
+	movw %ax, %ss 
+	ljmp $0x08, $flush 
 
-gdtdesc:
-  .word   (gdtdesc - gdt - 1)             # sizeof(gdt) - 1
-  .long   gdt                             # address gdt
+flush:
+	ret

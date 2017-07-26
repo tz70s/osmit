@@ -44,7 +44,7 @@ static void cursor() {
     outb(0x3D5, cursorLocation);
 }
 
-// put a character on the screen
+/* Put a character on the screen */
 void screen_putc(char c, vga_color_t back, vga_color_t front) {
     /*
     The VGA buffer put from the address 0xB8000.

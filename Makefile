@@ -9,8 +9,8 @@ KERINC=./kernel/
 OBJS=\
 kernel.o \
 vga.o\
-boot.o
-
+boot.o\
+gdt.o
 OBJS:=$(addprefix $(KERDIR), $(OBJS))
 
 HEADERS=\

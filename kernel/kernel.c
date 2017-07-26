@@ -2,6 +2,9 @@
 
 void kernel_main(void) {
 	
+	/* initialized gdt */
+	init_gdt();
+
 	screen_init();
 	screen_putc('H', VGA_COLOR_BLACK, VGA_COLOR_GREEN);
 	screen_putc('i', VGA_COLOR_BLACK, VGA_COLOR_BLUE);
