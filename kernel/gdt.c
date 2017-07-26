@@ -12,7 +12,7 @@ This is for practicing, the GDT already set up via GRUB is equivalent to the fol
 gdt_entry_t gdt_entries[GDT_LENGTH];
 
 /* GDTR */
-gdt_ptr_t gdt_ptr;
+volatile gdt_ptr_t gdt_ptr;
 
 /* 
 Insert entry to GDT, the index represented as the number of the entries.
@@ -41,6 +41,8 @@ void init_gdt() {
     gdt_set_entry(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
     gdt_set_entry(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);
     gdt_set_entry(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);
+	
+	__asm__ __volatile__("lgdt (%0)" :: "r"(&gdt_ptr));
 
     /* update/flush the gdt table */
     gdt_update((uint32_t)&gdt_ptr);

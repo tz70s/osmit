@@ -39,8 +39,6 @@ bootloader will jump to this position once the kernel has been loaded.
 .section .text
 .global _start
 _start:
-	
-	cli
 	/*
 	The bootloader has loaded us into 32-bit protected mode on a x86
 	machine. 
@@ -82,8 +80,7 @@ haltme:
 
 .global gdt_update
 gdt_update:
-	movl 4(%esp), %eax
-	lgdt (%eax)
+
 	movw $0x10, %ax
 	movw %ax, %ds 
 	movw %ax, %es
