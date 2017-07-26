@@ -44,7 +44,8 @@ $(gdb) continue
 
 ### Compilation
 Not so serious to build own cross-compilation toolchain(binutils, gcc), use flags in gcc, ld instead.
-I.e. -march=i386, -m32
+
+I.e. `-march=i386, -m32`
 
 ### License
 MIT
