@@ -14,8 +14,7 @@ gdt.o
 OBJS:=$(addprefix $(KERDIR), $(OBJS))
 
 HEADERS=\
-kernel.h\
-asm.h
+kernel.h
 
 HEADERS:=$(addprefix $(KERDIR), $(HEADERS))
 
