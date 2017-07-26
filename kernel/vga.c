@@ -3,10 +3,10 @@
 #define WIDTH 80
 #define HEIGHT 25
 
-// VGA buffer address(Memory map I/O), 0xB8000
+/* VGA buffer address(Memory map I/O), 0xB8000 */
 static uint16_t *vga_memory = (uint16_t*)0xB8000;
 
-// Cursor position
+/* Cursor position */
 static uint8_t cursor_x = 0;
 static uint8_t cursor_y = 0;
 static void cursor();
@@ -14,7 +14,7 @@ static void cursor();
 void screen_init() {
     uint8_t color_byte = (VGA_COLOR_BLACK << 4) | (VGA_COLOR_BLACK & 0x0f);
     int i;
-    // Simply set all memory objects to all black attribute
+    /* Simply set all memory objects to all black attribute */
     for(i=0; i<80*25; i++) {
         vga_memory[i] = 0x20 | (color_byte << 8);
     }
@@ -66,7 +66,7 @@ void screen_putc(char c, vga_color_t back, vga_color_t front) {
             }
     }
 
-    // newline
+    /* newline */
     if (cursor_x >= 80) {
         cursor_x = 0;
         cursor_y++;
@@ -75,7 +75,7 @@ void screen_putc(char c, vga_color_t back, vga_color_t front) {
     cursor();
 }
 
-// put a string
+/* put a string */
 void screen_puts(char *s, vga_color_t back, vga_color_t front) {
     while(*s) {
         screen_putc(*s, back, front);

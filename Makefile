@@ -7,14 +7,17 @@ KERDIR=./kernel/
 KERINC=./kernel/
 
 OBJS=\
-$(KERDIR)kernel.o \
-$(KERDIR)vga.o\
-$(KERDIR)boot.o
+kernel.o \
+vga.o\
+boot.o
+
+OBJS:=$(addprefix $(KERDIR), $(OBJS))
 
 HEADERS=\
-$(KERDIR)kernel.h\
-$(KERDIR)asm.h
+kernel.h\
+asm.h
 
+HEADERS:=$(addprefix $(KERDIR), $(HEADERS))
 
 boot.elf: $(OBJS)
 	ld $(LFLAGS) -o $@ $^
@@ -25,6 +28,8 @@ $(KERDIR)boot.o: $(KERDIR)boot.S $(HEADERS)
 $(KERDIR)%.o: $(KERDIR)%.c $(HEADERS)
 	$(CC) $(CFLAGS) -I$(KERINC) -c $< -o $@
 
+test:
+	echo $(OBJS)
 # run on qemu
 qemu:
 	@echo "start booting kernel from qemu..."
