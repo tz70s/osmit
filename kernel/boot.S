@@ -78,9 +78,21 @@ haltme:
 
 .size _start, . - _start
 
+/*
+The segment selector is 16 bit size with the following layout.
+RPL(Request privilege level) : Bits 0 ~ 1
+Ti(Table indicator, 0=GDT, 1=LDT) : Bits 2
+Index : Bits 3 ~ 15
+That is, the new (system) code selector(cs) is -> Index=1, Ti=0, RPL=0(Ring0) -> 0x08 (0b0...1000)
+The new (system) data selectors(ds, es, fs, gs, ss) are -> Index=2, Ti=0, RPL=0 -> 0x10(0b0..10000)
+
+Further more,
+The user mode code selector with Ring3 -> Index=3, Ti=0, RPL=3 -> 0x1b(0b0..11011)
+The user mode data selector with Ring3 -> Index=4, Ti=0. RPL=3 -> 0x23(0b0..100011)
+*/
+
 .global gdt_update
 gdt_update:
-
 	movw $0x10, %ax
 	movw %ax, %ds 
 	movw %ax, %es
