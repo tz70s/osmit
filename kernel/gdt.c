@@ -19,7 +19,7 @@ Insert entry to GDT, the index represented as the number of the entries.
 Actually we have only 5 entries, that is, use only uint8_t size.
 */
 static void gdt_set_entry(uint8_t index, uint32_t base, uint32_t limit, uint8_t access, uint8_t gran);
-extern void gdt_update(uint32_t);
+extern void gdt_update();
 /* 
 Initialized GDT.
 Using the Flat Mode, only one segment at base address 0x000000.
@@ -45,7 +45,7 @@ void init_gdt() {
 	__asm__ __volatile__("lgdt (%0)" :: "r"(&gdt_ptr));
 
     /* update/flush the gdt table */
-    gdt_update((uint32_t)&gdt_ptr);
+    gdt_update();
 }
 
 /* Set to the corresponding bits */
