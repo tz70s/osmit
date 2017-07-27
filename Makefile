@@ -10,7 +10,9 @@ OBJS=\
 kernel.o \
 vga.o\
 boot.o\
-gdt.o
+cpu_vector_x86.o\
+isr.o
+
 OBJS:=$(addprefix $(KERDIR), $(OBJS))
 
 HEADERS=\
@@ -23,6 +25,9 @@ boot.elf: $(OBJS)
 
 $(KERDIR)boot.o: $(KERDIR)boot.S $(HEADERS)
 	$(CC) $(CFLAGS) -nostdinc -I$(KERINC) -c $< -o $@
+
+$(KERDIR)isr.o: $(KERDIR)cpu_vector_x86.S
+	$(CC) $(CFLAGS) -nostdinc -c $< -o $@
 
 $(KERDIR)%.o: $(KERDIR)%.c $(HEADERS)
 	$(CC) $(CFLAGS) -I$(KERINC) -c $< -o $@

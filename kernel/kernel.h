@@ -89,6 +89,38 @@ typedef struct gdt_ptr_t {
 
 void init_gdt();
 
+/* Interrupt settings */
+
+/*
+Interrupt Gate/Descriptor, two 32-bits as an entry.
+Similar to segment descriptor.
+
+Offset - 0 ~ 15
+Segment Selector - 16 ~ 31
+
+Always Zero - 0 ~ 7
+Flags - 8 ~ 12
+DPL(Ring) - 13 ~ 14
+P (Segment present) - 15
+Offset - 16 ~ 31
+*/
+typedef struct idt_entry_t {
+	uint16_t off_low;
+	uint16_t sel;
+	uint8_t alwayszero;
+	uint8_t flags;
+	uint16_t off_high;
+} __attribute__((packed)) idt_entry_t;
+
+/* IDTR */
+typedef struct idt_ptr_t {
+	uint16_t limit;
+	uint32_t base;
+} __attribute__((packed)) idt_ptr_t;
+
+/* init idt */
+void init_idt();
+
 /* VGA settings. */
 
 /* Hardware text mode color constants. Formal declaration. */
