@@ -21,6 +21,7 @@ void kernel_main(void) {
 	"Author @tz70s in 2017.\n" \
 	"Start kernel...\n", VGA_COLOR_BLACK, VGA_COLOR_LIGHT_GREEN);
 
+	__asm__ __volatile__("int $0x00");
 	__asm__ __volatile__("int $0x03");
 	__asm__ __volatile__("int $0x04");
 	

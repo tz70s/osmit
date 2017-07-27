@@ -41,8 +41,8 @@ void init_gdt() {
     gdt_set_entry(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
     gdt_set_entry(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);
     gdt_set_entry(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);
-	
-	__asm__ __volatile__("lgdt (%0)" :: "r"(&gdt_ptr));
+
+    __asm__ __volatile__("lgdt (%0)" :: "r"(&gdt_ptr));
 
     /* update/flush the gdt table */
     gdt_update();
@@ -148,6 +148,13 @@ static void idt_set_entry(uint8_t num, uint32_t off, uint16_t sel, uint8_t flags
     idt_entries[num].flags = flags;
 }
 
+/* set a sample interrupt handler */
+static void sample_interrupt_divide_by_zero(pt_regs * regs) {
+    screen_puts("\nDivided by ZERO, interrupt(trap) no.", VGA_COLOR_BLACK, VGA_COLOR_GREEN);
+    screen_putc('0' + regs->int_num, VGA_COLOR_BLACK, VGA_COLOR_LIGHT_RED);
+    screen_putc('\n', VGA_COLOR_BLACK, VGA_COLOR_GREEN);
+}
+
 /* IDT settings */
 void init_idt() {
 
@@ -155,6 +162,7 @@ void init_idt() {
     idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base = (uint32_t)&idt_entries;
 
+    interrupt_handlers[0] = sample_interrupt_divide_by_zero;
     idt_set_entry(0, (uint32_t)trap0, 0x08, 0x8E);
     idt_set_entry(1, (uint32_t)trap1, 0x08, 0x8E);
     idt_set_entry(2, (uint32_t)trap2, 0x08, 0x8E);
