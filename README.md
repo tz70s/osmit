@@ -3,9 +3,12 @@
 Implement a simple operating system.
 
 ### TODO
-- [ ] Initialized Kernel
+- [x] Initialized Kernel
 	- [x] Set up GDT
-	- [ ] Set up IDT, Interrupt
+	- [x] Set up IDT
+- [ ] Interrupts
+	- [x] Traps
+	- [ ] IRQ
 - [ ] Memory Management
 	- [ ] Paging
 - [ ] Process Management
