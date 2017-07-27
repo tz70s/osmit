@@ -9,7 +9,7 @@ trap\TRAP_ENTRY_NUM:
 .else
     push $0
 .endif
-    push \TRAP_ENTRY_NUM
+    push $\TRAP_ENTRY_NUM
     jmp isr_common_stub
 .endm
 
