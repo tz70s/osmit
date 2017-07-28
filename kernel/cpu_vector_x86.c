@@ -113,24 +113,70 @@ extern void trap18();
 extern void trap19();
 extern void trap20();
 
+/* IRQ isr */
+extern void irq0();
+extern void irq1();
+extern void irq2();
+extern void irq3();
+extern void irq4();
+extern void irq5();
+extern void irq6();
+extern void irq7();
+extern void irq8();
+extern void irq9();
+extern void irq10();
+extern void irq11();
+extern void irq12();
+extern void irq13();
+extern void irq14();
+extern void irq15();
+extern void irq16();
+extern void irq17();
+extern void irq18();
+extern void irq19();
+
 /* Function pointer to ISR. */
 typedef void (*interrupt_handler_t)(pt_regs *);
-
-/* Interrupt handler registration */
-void interrupt_handler_register(uint8_t n, interrupt_handler_t h);
 
 /* Interrupt handlers */
 interrupt_handler_t interrupt_handlers[256];
 
-/* Interrupt handler */
-void isr_handler(pt_regs *regs){
+/* Interrupt handler registration */
+void interrupt_handler_register(uint8_t n, interrupt_handler_t h) {
+    interrupt_handlers[n] = h;    
+}
+
+static void irq_handler(pt_regs *regs) {
+    /* Send reset interrupt signal to PICs */
+    if (regs->int_num >= 40) {
+        /* Send signal to slave */
+        outb(0xA0, 0x20);
+    }
+    /* Send signal to master */
+    outb(0x20, 0x20);
     if (interrupt_handlers[regs->int_num]) {
         interrupt_handlers[regs->int_num](regs);
     } else {
         screen_puts("\nUnhandled interrupt", VGA_COLOR_BLACK, VGA_COLOR_GREEN);
         screen_putc('0' + regs->int_num, VGA_COLOR_BLACK, VGA_COLOR_LIGHT_RED);
         screen_putc('\n', VGA_COLOR_BLACK, VGA_COLOR_GREEN);
-    }   
+    }
+}
+/* Interrupt handler */
+void isr_handler(pt_regs *regs){
+
+    /* If IRQ, jump to irq_handler */
+    if ((regs->int_num >= 32) && (regs->int_num <= 47)) {
+        irq_handler(regs);
+    } else {
+        if (interrupt_handlers[regs->int_num]) {
+            interrupt_handlers[regs->int_num](regs);
+        } else {
+            screen_puts("\nUnhandled interrupt", VGA_COLOR_BLACK, VGA_COLOR_GREEN);
+            screen_putc('0' + regs->int_num, VGA_COLOR_BLACK, VGA_COLOR_LIGHT_RED);
+            screen_putc('\n', VGA_COLOR_BLACK, VGA_COLOR_GREEN);
+        }   
+    }
 }
 
 /* IDT */
@@ -147,22 +193,73 @@ static void idt_set_entry(uint8_t num, uint32_t off, uint16_t sel, uint8_t flags
     idt_entries[num].alwayszero = 0;
     idt_entries[num].flags = flags;
 }
-
-/* set a sample interrupt handler */
-static void sample_interrupt_divide_by_zero(pt_regs * regs) {
-    screen_puts("\nDivided by ZERO, interrupt(trap) no.", VGA_COLOR_BLACK, VGA_COLOR_GREEN);
-    screen_putc('0' + regs->int_num, VGA_COLOR_BLACK, VGA_COLOR_LIGHT_RED);
-    screen_putc('\n', VGA_COLOR_BLACK, VGA_COLOR_GREEN);
+static uint32_t tick = 0;
+static uint8_t count = 0;
+ 
+/* Timer IRQ handler */
+static void timer_callback(pt_regs *regs) {
+    tick++;
+    if (tick % 100 == 0) {
+        count++;
+        screen_putc_stay('0'+(uint8_t)count%10, VGA_COLOR_GREEN, VGA_COLOR_LIGHT_CYAN);
+    }
 }
+
+/* Init timer */
+void init_timer(uint32_t frequency) {
+    interrupt_handler_register(32, timer_callback);
+    uint32_t divisor = 1193180 / frequency;
+
+    outb(0x43, 0x36);
+    
+    outb(0x40, (uint8_t)(divisor & 0xFF));
+    outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));
+}
+
+/* Initialized IRQ */
+static void init_irq() {
+    /*
+    Intel 8259A (PIC) have 8 interrupt numbers each. 
+    Intel architecture uses two 8259A (master, slave) for irq extension.
+    The master IRQ port - 0x20, 0x21
+    The slave IRQ port - 0xA0, 0xA1 
+    */
+
+    /* For initialization */
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
+
+    /* Set IRQ Master PIC start at interrupt number 32(0x20) */
+    outb(0x21, 0x20);
+
+    /* Set IRQ Slave PIC start at interrupt number 40(0x28) */
+    outb(0xA1, 0x28);
+
+    /* Set IRQ Master pin IR2 connect to Slave */
+    outb(0x21, 0x04);
+
+    /* Set IRQ Slave connect to master */
+    outb(0xA1, 0x02);
+
+    /* Set PIC works in 8086 mode */
+    outb(0x21, 0x01);
+    outb(0xA1, 0x01);
+
+    /* Allow interrupt */
+    outb(0x21, 0x0);
+    outb(0xA1, 0x0); 
+} 
 
 /* IDT settings */
 void init_idt() {
+
+    /* Initialized PIC */
+    init_irq();
 
     /* TODO: Initialized Interrupt handlers[] and Idt_entries[] */
     idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base = (uint32_t)&idt_entries;
 
-    interrupt_handlers[0] = sample_interrupt_divide_by_zero;
     idt_set_entry(0, (uint32_t)trap0, 0x08, 0x8E);
     idt_set_entry(1, (uint32_t)trap1, 0x08, 0x8E);
     idt_set_entry(2, (uint32_t)trap2, 0x08, 0x8E);
@@ -184,6 +281,24 @@ void init_idt() {
     idt_set_entry(18, (uint32_t)trap18, 0x08, 0x8E);
     idt_set_entry(19, (uint32_t)trap19, 0x08, 0x8E);
     idt_set_entry(20, (uint32_t)trap20, 0x08, 0x8E);
+    
+    /* IRQ */
+    idt_set_entry(32, (uint32_t)irq0, 0x08, 0x8E);
+    idt_set_entry(33, (uint32_t)irq1, 0x08, 0x8E);
+    idt_set_entry(34, (uint32_t)irq2, 0x08, 0x8E);
+    idt_set_entry(35, (uint32_t)irq3, 0x08, 0x8E);
+    idt_set_entry(36, (uint32_t)irq4, 0x08, 0x8E);
+    idt_set_entry(37, (uint32_t)irq5, 0x08, 0x8E);
+    idt_set_entry(38, (uint32_t)irq6, 0x08, 0x8E);
+    idt_set_entry(39, (uint32_t)irq7, 0x08, 0x8E);
+    idt_set_entry(40, (uint32_t)irq8, 0x08, 0x8E);
+    idt_set_entry(41, (uint32_t)irq9, 0x08, 0x8E);
+    idt_set_entry(42, (uint32_t)irq10, 0x08, 0x8E);
+    idt_set_entry(43, (uint32_t)irq11, 0x08, 0x8E);
+    idt_set_entry(44, (uint32_t)irq12, 0x08, 0x8E);
+    idt_set_entry(45, (uint32_t)irq13, 0x08, 0x8E);
+    idt_set_entry(46, (uint32_t)irq14, 0x08, 0x8E);
+    idt_set_entry(47, (uint32_t)irq15, 0x08, 0x8E);
     
     __asm__ __volatile__("lidt (%0)" :: "r"(&idt_ptr));
     

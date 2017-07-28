@@ -121,6 +121,7 @@ typedef struct idt_ptr_t {
 /* init idt */
 void init_idt();
 
+void init_timer(uint32_t);
 /* VGA settings. */
 
 /* Hardware text mode color constants. Formal declaration. */
@@ -148,6 +149,10 @@ void screen_init();
 
 /* Output a character */
 void screen_putc(char c, vga_color_t back, vga_color_t front);
+
+/* Output a character */
+void screen_putc_stay(char c, vga_color_t back, vga_color_t front);
+
 
 /* Output a string */
 void screen_puts(char *s, vga_color_t back, vga_color_t front);

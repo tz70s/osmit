@@ -6,9 +6,9 @@ Implement a simple operating system.
 - [x] Initialized Kernel
 	- [x] Set up GDT
 	- [x] Set up IDT
-- [ ] Interrupts
+- [x] Interrupts
 	- [x] Traps
-	- [ ] IRQ
+	- [x] IRQ
 - [ ] Memory Management
 	- [ ] Paging
 - [ ] Process Management

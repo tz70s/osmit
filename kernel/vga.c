@@ -75,6 +75,17 @@ void screen_putc(char c, vga_color_t back, vga_color_t front) {
     cursor();
 }
 
+void screen_putc_stay (char c, vga_color_t back, vga_color_t front) {
+    /*
+    The VGA buffer put from the address 0xB8000.
+    Then read the memory above, each two bytes represented as a character.
+    The color (back, front) puts on the higher 8 bits, and the ASCII code puts on the lower 8 bits.    
+    */
+    uint8_t color_byte = (back << 4) | (front & 0x0f);
+    if (c >= ' ') {
+        vga_memory[cursor_y*80 + cursor_x] = c | (color_byte << 8);
+    }
+}
 /* put a string */
 void screen_puts(char *s, vga_color_t back, vga_color_t front) {
     while(*s) {

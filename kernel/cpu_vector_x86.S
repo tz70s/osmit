@@ -1,39 +1,39 @@
-/* assembly for TRAP_ENTRY and IRQ settings */
-.macro TRAP_ENTRY TRAP_ENTRY_NUM, ERRCODE
-.global trap\TRAP_ENTRY_NUM
-.type trap\TRAP_ENTRY_NUM, @function
+/* assembly for TRAP and IRQ settings */
+.macro TRAP TRAP_NUM, ERRCODE
+.global trap\TRAP_NUM
+.type trap\TRAP_NUM, @function
 
-trap\TRAP_ENTRY_NUM:
+trap\TRAP_NUM:
     cli
 .if \ERRCODE
 .else
     push $0
 .endif
-    push $\TRAP_ENTRY_NUM
+    push $\TRAP_NUM
     jmp isr_common_stub
 .endm
 
-TRAP_ENTRY 0,  0 /* #DE */
-TRAP_ENTRY 1,  0 /* #DB */
-TRAP_ENTRY 2,  0 /* #NMI */
-TRAP_ENTRY 3,  0 /* #BP */
-TRAP_ENTRY 4,  0 /* #OF */
-TRAP_ENTRY 5,  0 /* #BR */
-TRAP_ENTRY 6,  0 /* #UD */
-TRAP_ENTRY 7,  0 /* #NM */
-TRAP_ENTRY 8,  1 /* #DF */
-TRAP_ENTRY 9,  0 /* Cross operation*/
-TRAP_ENTRY 10, 1 /* #TS */
-TRAP_ENTRY 11, 1 /* #NP */
-TRAP_ENTRY 12, 1 /* #SS */
-TRAP_ENTRY 13, 1 /* #GP */
-TRAP_ENTRY 14, 1 /* #PF */
-TRAP_ENTRY 15, 0 /* CPU preserved */
-TRAP_ENTRY 16, 0 /* #MF */
-TRAP_ENTRY 17, 1 /* #AC */
-TRAP_ENTRY 18, 0 /* #MC */
-TRAP_ENTRY 19, 0 /* #XM */
-TRAP_ENTRY 20, 0 /* #VE */
+TRAP 0,  0 /* #DE */
+TRAP 1,  0 /* #DB */
+TRAP 2,  0 /* #NMI */
+TRAP 3,  0 /* #BP */
+TRAP 4,  0 /* #OF */
+TRAP 5,  0 /* #BR */
+TRAP 6,  0 /* #UD */
+TRAP 7,  0 /* #NM */
+TRAP 8,  1 /* #DF */
+TRAP 9,  0 /* Cross operation*/
+TRAP 10, 1 /* #TS */
+TRAP 11, 1 /* #NP */
+TRAP 12, 1 /* #SS */
+TRAP 13, 1 /* #GP */
+TRAP 14, 1 /* #PF */
+TRAP 15, 0 /* CPU preserved */
+TRAP 16, 0 /* #MF */
+TRAP 17, 1 /* #AC */
+TRAP 18, 0 /* #MC */
+TRAP 19, 0 /* #XM */
+TRAP 20, 0 /* #VE */
 
 /* Interrupt common stub */
 isr_common_stub:
@@ -65,3 +65,33 @@ isr_common_stub:
     add $8, %esp
     iret
 .end:
+
+/* IRQ settings */
+
+.macro IRQ IRQ_NUM, INT_NUM
+.global irq\IRQ_NUM
+.type irq\IRQ_NUM, @function
+
+irq\IRQ_NUM:
+    cli
+    push $0
+    push $\INT_NUM
+    jmp isr_common_stub
+.endm
+
+IRQ 0,  32 /* Clock */
+IRQ 1,  33 /* Keyboard */
+IRQ 2,  34 /* Connect with TRAP9 */
+IRQ 3,  35 /* COM2 */
+IRQ 4,  36 /* COM1 */
+IRQ 5,  37 /* Audio */
+IRQ 6,  38 /* Floppy Disk */
+IRQ 7,  39 /* Printer */
+IRQ 8,  40 /* Real-time Clock */
+IRQ 9,  41 /* Connect with TRAP2*/
+IRQ 10, 42 /* Network */
+IRQ 11, 43 /* AGP */
+IRQ 12, 44 /* PS/2 mouse */
+IRQ 13, 45 /* FPU, Coprocessor, Inter-processor */
+IRQ 14, 46 /* Primary ATA Hard Disk */
+IRQ 15, 47 /* Secondary ATA Hard Disk */
