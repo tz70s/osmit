@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "libc.h"
 
 #define WIDTH 80
 #define HEIGHT 25

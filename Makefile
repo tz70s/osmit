@@ -11,12 +11,14 @@ kernel.o \
 vga.o\
 boot.o\
 cpu_vector_x86.o\
-isr.o
+isr.o\
+libc.o
 
 OBJS:=$(addprefix $(KERDIR), $(OBJS))
 
 HEADERS=\
-kernel.h
+kernel.h\
+libc.h
 
 HEADERS:=$(addprefix $(KERDIR), $(HEADERS))
 

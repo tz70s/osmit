@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "libc.h"
 
 void kernel_main(void) {
 	
@@ -13,7 +14,7 @@ void kernel_main(void) {
 	screen_putc('i', VGA_COLOR_BLACK, VGA_COLOR_BLUE);
 	screen_putc('!', VGA_COLOR_BLACK, VGA_COLOR_LIGHT_RED);
 	screen_putc('\n', VGA_COLOR_BLACK, VGA_COLOR_BLUE);
-
+	
 	
 	screen_puts( \
 	"\n* This is a BABY i386 kernel implementation.\n" \
@@ -21,9 +22,8 @@ void kernel_main(void) {
 	"Author @tz70s in 2017.\n" \
 	"Start kernel...\n", VGA_COLOR_BLACK, VGA_COLOR_LIGHT_GREEN);
 
-	//__asm__ __volatile__("int $0x03");
-	//__asm__ __volatile__("int $0x04");
-	
+	char * tstr = "\nThe timer : ";
+	screen_puts(tstr, VGA_COLOR_BLACK, VGA_COLOR_LIGHT_RED);
 	init_timer(1);
 	__asm__ __volatile__("sti");
 

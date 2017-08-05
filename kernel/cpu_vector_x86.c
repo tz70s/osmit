@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "libc.h"
 
 /* 
 For GDT settings.
@@ -201,7 +202,7 @@ static void timer_callback(pt_regs *regs) {
     tick++;
     if (tick % 100 == 0) {
         count++;
-        screen_putc_stay('0'+(uint8_t)count%10, VGA_COLOR_GREEN, VGA_COLOR_LIGHT_CYAN);
+        screen_putc_stay('0'+(uint8_t)count%10, VGA_COLOR_BROWN, VGA_COLOR_LIGHT_CYAN);
     }
 }
 
@@ -256,7 +257,11 @@ void init_idt() {
     /* Initialized PIC */
     init_irq();
 
-    /* TODO: Initialized Interrupt handlers[] and Idt_entries[] */
+    /* Initialized Interrupt handlers[] and Idt_entries[] */
+    bzero(idt_entries, 256 * sizeof(idt_entry_t));
+    bzero(interrupt_handlers, 256 * sizeof(interrupt_handler_t));
+    
+    /* Set idt pointer (lidt) */
     idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base = (uint32_t)&idt_entries;
 

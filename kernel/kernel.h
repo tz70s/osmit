@@ -1,13 +1,7 @@
 #ifndef INCLUDE_KERNEL_H_
 #define INCLUDE_KERNEL_H_
 
-/* Type defintions for conveience. */
-
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-/* notice: no 64 bits in this os */
-
+#include "libc.h"
 /* I/O operation definition.*/
 
 /* put a byte to an output port */
